@@ -33,3 +33,10 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
+
+# Emacs temp files
+*~
+
+# API secrets & video files
+config.yaml
+videos.json
