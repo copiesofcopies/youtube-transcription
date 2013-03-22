@@ -1,7 +1,7 @@
 # Youtube settings
 
-user_email: 
-user_password: 
-source: 
-developer_key: 
-client_id: 
+user_email:			# YT login
+user_password: 			# YT password
+source: 			# YT-registered app's source ID
+developer_key: 			# YT developer key 
+client_id: 			# YT-registered app's client ID
