@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 import re
 import yaml
 import json
@@ -118,15 +119,24 @@ if __name__ == "__main__":
     uploaded_ids = []
 
     for video in videos:
+        # Download the video indicated by the URL
         fn = get_video_from_url(video)
 
+        # Fill in the video metadata values
         metadata = parse_metadata(videos[video])
+
+        # Upload the video
         uploaded_vid = upload_video(fn, metadata)
 
+        # Grab the YouTube ID and store it with the metadata
         video_id = get_entry_id(uploaded_vid.id)
-
         videos[video]['id'] = video_id
 
+        # Remove the local file
+        os.remove(fn)
+
+    # Write a json file identical to the input, except with the YT id
+    # added for each entry
     output_file = open(options.output_file, "wt")
     output_file.write(json.dumps(videos))
     output_file.close()
