@@ -12,18 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sys
-import re
-import time
 import yaml
 import json
-import requests
 import optparse
-import xml.etree.ElementTree as ET
-import urllib, urllib2
 import gdata.youtube
 import gdata.youtube.service
-from requests.auth import HTTPDigestAuth
 
 yt_service = gdata.youtube.service.YouTubeService()
 

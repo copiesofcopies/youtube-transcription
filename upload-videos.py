@@ -13,10 +13,10 @@
 # limitations under the License.
 
 import re
-import time
 import yaml
 import json
 import urllib
+import optparse
 import gdata.youtube
 import gdata.youtube.service
 
