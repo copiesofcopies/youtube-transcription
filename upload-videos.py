@@ -39,9 +39,13 @@ yt_service.developer_key = config['developer_key']
 yt_service.client_id = config['client_id']
 yt_service.ProgrammaticLogin()
 
+# Regex to extract video ID from uploaded video object. (Why there's
+# no useful "ID" field is beyond me.)
 video_id_regex = re.compile('http://gdata.youtube.com/feeds/api/videos/(\w+)</ns0:id>')
 
+# Upload a video to YouTube and get back a YouTubeVideoEntry object
 def upload_video(filename, metadata):
+    # Create a container object for video metadata
     media_group = gdata.media.Group(
         title=gdata.media.Title(text=metadata['title']),
         description=gdata.media.Description(description_type='plain',
@@ -55,24 +59,26 @@ def upload_video(filename, metadata):
         private=gdata.media.Private()
         )
 
-    # set the path for the video file binary
-    video_file_location = filename
-
+    # Create a YouTubeVideoEntry with the metadata associated
     video_entry = gdata.youtube.YouTubeVideoEntry(media=media_group)
 
-    # assuming that video_file_location points to a valid path
-    new_entry = yt_service.InsertVideoEntry(video_entry, video_file_location)
+    # Upload the video at `filename` and associate it with the new
+    # YouTubeVideoEntry
+    new_entry = yt_service.InsertVideoEntry(video_entry, filename)
     
     return new_entry
 
 
+# Download the video at a given URL
+# TODO: handle missing or unavailable videos
 def get_video_from_url(url):
     (filename, headers) = urllib.urlretrieve(url)
     return filename
 
 
-def get_entry_id(entry_id):
-    m = video_id_regex.search(str(entry_id))
+# Extract a video's YT ID from its full URL
+def get_entry_id(entry_url):
+    m = video_id_regex.search(str(entry_url))
     if m:
         parsed_id = m.group(1)
         return parsed_id
@@ -80,6 +86,8 @@ def get_entry_id(entry_id):
     return False
 
 
+# Map provided metadata to dict to be passed with new video (ensures
+# empty strings are passed instead of None values)
 def parse_metadata(metadata):
     all_metadata = {
         'local_id': '',
@@ -98,6 +106,7 @@ def parse_metadata(metadata):
 
 if __name__ == "__main__":
     # Set up the command line argument parser
+    # TODO: check for required -i and -o parameters, exit if missing
     parser = optparse.OptionParser()
 
     parser.add_option('-i', '--input-file',

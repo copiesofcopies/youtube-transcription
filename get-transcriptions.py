@@ -34,17 +34,25 @@ yt_service.password = config['user_password']
 yt_service.source = config['source']
 yt_service.developer_key = config['developer_key']
 yt_service.client_id = config['client_id']
+
+# Connect to the YouTube API
 yt_service.ProgrammaticLogin()
 
 
+# Retrieve a single caption track given its URL
 def get_caption_track(url):
     return yt_service.Get("%s" % url, converter=converter)
 
 
+# This seemingly useless function has to be passed into
+# yt_service.Get() to "process" the caption track because of a WONTFIX
+# bug <https://code.google.com/p/gdata-issues/issues/detail?id=4289>
+# in Google's gdata library.
 def converter(url):
     return url
 
 
+# Get a GDataFeed of all the caption tracks associated with the video
 def get_available_caption_tracks(id):
     caption_feed = yt_service.Get('https://gdata.youtube.com/feeds/api/videos/%s/captions' % id)
 
@@ -53,6 +61,7 @@ def get_available_caption_tracks(id):
 
 if __name__ == "__main__":
     # Set up the command line argument parser
+    # TODO: check for required -i and -o parameters, exit if missing
     parser = optparse.OptionParser()
 
     parser.add_option('-i', '--input-file',
@@ -67,18 +76,24 @@ if __name__ == "__main__":
     
     options, args = parser.parse_args()
 
+    # Open and parse the json video manifest
     videos_file = open(options.input_file, 'r')
     videos = json.load(videos_file)
 
+    # For each video, get the caption tracks and store them locally
     for video in videos:
         video_id = videos[video]['id']
-        print "Getting available caption tracks for %s" % video_id
         feed = get_available_caption_tracks(video_id)
     
         inc = 0
 
         for entry in feed.entry:
             caption_track = get_caption_track(entry.content.src)
+            
+            # If there's more than one caption track, increment
+            # filenames. TODO: get more meaningful information about
+            # the differences between tracks and append more helpful
+            # distinguishing info.
             
             if inc > 0:
                 fn = "%s-%s.txt" % (video_id, inc)

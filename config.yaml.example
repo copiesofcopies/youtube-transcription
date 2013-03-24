@@ -2,6 +2,6 @@
 
 user_email:			# YT login
 user_password: 			# YT password
-source: 			# YT-registered app's source ID
-developer_key: 			# YT developer key 
+source: 			# YT-registered app's Product ID
+developer_key: 			# YT API key
 client_id: 			# YT-registered app's client ID
