@@ -156,4 +156,4 @@ if __name__ == "__main__":
         output_fn = options.input_file
 
     with open(output_fn, "wt") as output_file:
-        output_file.write(json.dumps(videos))
+        output_file.write(json.dumps(videos, indent=4, sort_keys=True))
