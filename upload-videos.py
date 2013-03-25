@@ -28,8 +28,8 @@ yt_service = gdata.youtube.service.YouTubeService()
 yt_service.ssl = True
 
 # Parse the yaml config file
-config_file = open('config.yaml', 'r')
-config = yaml.load(config_file.read())
+with open('config.yaml', 'r') as config_file:
+    config = yaml.load(config_file.read())
 
 # A complete client login request
 yt_service.email = config['user_email']
@@ -122,18 +122,20 @@ if __name__ == "__main__":
     options, args = parser.parse_args()
 
     # Parse the json videos file
-    videos_file = open(options.input_file, 'r')
-    videos = json.load(videos_file)
+    with open(options.input_file, 'r') as f:  
+        videos = json.load(f)
 
     uploaded_ids = []
 
     for video in videos:
         # Download the video indicated by the URL
+        print "Downloading video from %s..." % video
         fn = get_video_from_url(video)
 
         # Fill in the video metadata values
         metadata = parse_metadata(videos[video])
 
+        print "Uploading video from %s to YouTube..." % video
         # Upload the video
         uploaded_vid = upload_video(fn, metadata)
 
@@ -144,8 +146,14 @@ if __name__ == "__main__":
         # Remove the local file
         os.remove(fn)
 
+        print "Finished uploading; YouTube ID is %s" % video_id
+
     # Write a json file identical to the input, except with the YT id
     # added for each entry
-    output_file = open(options.output_file, "wt")
-    output_file.write(json.dumps(videos))
-    output_file.close()
+    if options.output_file:
+        output_fn = options.output_file
+    else:
+        output_fn = options.input_file
+
+    with open(output_fn, "wt") as output_file:
+        output_file.write(json.dumps(videos))

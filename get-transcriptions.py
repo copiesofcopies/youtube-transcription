@@ -25,8 +25,8 @@ yt_service = gdata.youtube.service.YouTubeService()
 yt_service.ssl = True
 
 # Parse the yaml config file
-config_file = open('config.yaml', 'r')
-config = yaml.load(config_file.read())
+with open('config.yaml', 'r') as config_file:  
+    config = yaml.load(config_file.read())
 
 # A complete client login request
 yt_service.email = config['user_email']
@@ -77,12 +77,14 @@ if __name__ == "__main__":
     options, args = parser.parse_args()
 
     # Open and parse the json video manifest
-    videos_file = open(options.input_file, 'r')
-    videos = json.load(videos_file)
+    with open(options.input_file, 'r') as f:  
+        videos = json.load(f)
 
     # For each video, get the caption tracks and store them locally
     for video in videos:
         video_id = videos[video]['id']
+
+        print "Retrieving caption tracks for video with ID %s..." % video_id
         feed = get_available_caption_tracks(video_id)
     
         inc = 0
@@ -100,6 +102,7 @@ if __name__ == "__main__":
             else:
                 fn = "%s.sbv" % video_id
 
-            caption_file = open("%s%s" % (options.output_dir, fn), "wt")
-            caption_file.write(caption_track)
-            caption_file.close()
+            print "Saving caption track to %s%s" % (options.output_dir, fn)
+
+            with open("%s%s" % (options.output_dir, fn), "wt") as caption_file:
+                caption_file.write(caption_track)
