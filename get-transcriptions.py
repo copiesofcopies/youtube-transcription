@@ -96,9 +96,9 @@ if __name__ == "__main__":
             # distinguishing info.
             
             if inc > 0:
-                fn = "%s-%s.txt" % (video_id, inc)
+                fn = "%s-%s.sbv" % (video_id, inc)
             else:
-                fn = "%s.txt" % video_id
+                fn = "%s.sbv" % video_id
 
             caption_file = open("%s%s" % (options.output_dir, fn), "wt")
             caption_file.write(caption_track)
