@@ -5,7 +5,7 @@ Scripts to retrieve videos, upload them to YouTube, and retrieve the automatical
 
 ## config.yaml
 
-The scripts require a files called config.yaml (formatted like the included file config.yaml.example) containing your YouTube auth information.
+The scripts require a files called config.yaml (formatted like the included file config.yaml.example) containing your YouTube auth information. Note that if your YouTube account has two-factor authentication enabled, you'll have to [generate an application-specific password](http://support.google.com/accounts/bin/answer.py?hl=en&answer=185833), rather than providing your Google account's password.
 
 ## upload-videos.py
 
