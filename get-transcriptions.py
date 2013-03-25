@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 import yaml
 import json
 import optparse
@@ -102,7 +103,9 @@ if __name__ == "__main__":
             else:
                 fn = "%s.sbv" % video_id
 
-            print "Saving caption track to %s%s" % (options.output_dir, fn)
+            output_path = os.path.normpath(options.output_dir) + os.sep + fn
 
-            with open("%s%s" % (options.output_dir, fn), "wt") as caption_file:
+            print "Saving caption track to %s" % (output_path)
+
+            with open(output_path, "wt") as caption_file:
                 caption_file.write(caption_track)
