@@ -16,6 +16,7 @@ import os
 import yaml
 import json
 import optparse
+import logging
 import gdata.youtube
 import gdata.youtube.service
 
@@ -65,17 +66,26 @@ if __name__ == "__main__":
     # TODO: check for required -i and -o parameters, exit if missing
     parser = optparse.OptionParser()
 
-    parser.add_option('-i', '--input-file',
-                      action="store", dest="input_file",
-                      help="""Input json file""",
-                      default="")
+    parser.add_option('-i', '--input-file', action="store", dest="input_file",
+                      help="""Input json file""", default="")
 
-    parser.add_option('-o', '--output-dir',
-                      action="store", dest="output_dir",
+    parser.add_option('-o', '--output-dir', action="store", dest="output_dir",
                       help="""Output directory""",
                       default="")
+
+    parser.add_option('-q', '--quiet', action='store_true', dest='quiet',
+                      help="""Don't display informational logs""", 
+                      default=False)
     
     options, args = parser.parse_args()
+
+    # Set logging level
+    if options.quiet:
+        log_level = logging.ERROR
+    else:
+        log_level = logging.INFO
+
+    logging.basicConfig(format='%(levelname)s: %(message)s', level=log_level)
 
     # Open and parse the json video manifest
     with open(options.input_file, 'r') as f:  
@@ -85,7 +95,7 @@ if __name__ == "__main__":
     for video in videos:
         video_id = videos[video]['id']
 
-        print "Retrieving caption tracks for video with ID %s..." % video_id
+        logging.info("Retrieving caption tracks for video with ID %s..." % video_id)
         feed = get_available_caption_tracks(video_id)
     
         inc = 0
@@ -105,7 +115,7 @@ if __name__ == "__main__":
 
             output_path = os.path.normpath(options.output_dir) + os.sep + fn
 
-            print "Saving caption track to %s" % (output_path)
+            logging.info("Saving caption track to %s" % (output_path))
 
             with open(output_path, "wt") as caption_file:
                 caption_file.write(caption_track)

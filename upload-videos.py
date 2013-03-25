@@ -18,6 +18,7 @@ import yaml
 import json
 import urllib
 import optparse
+import logging
 import gdata.youtube
 import gdata.youtube.service
 
@@ -109,17 +110,26 @@ if __name__ == "__main__":
     # TODO: check for required -i and -o parameters, exit if missing
     parser = optparse.OptionParser()
 
-    parser.add_option('-i', '--input-file',
-                      action="store", dest="input_file",
-                      help="""Input json file""",
-                      default="")
+    parser.add_option('-i', '--input-file', action="store", dest="input_file",
+                      help="""Input json file""", default="")
 
-    parser.add_option('-o', '--output-file',
-                      action="store", dest="output_file",
+    parser.add_option('-o', '--output-file', action="store", dest="output_file",
                       help="""Output json file (with YouTube IDs)""",
                       default="")
-    
+
+    parser.add_option('-q', '--quiet', action='store_true', dest='quiet',
+                      help="""Don't display informational logs""", 
+                      default=False)
+
     options, args = parser.parse_args()
+
+    # Set logging level
+    if options.quiet:
+        log_level = logging.ERROR
+    else:
+        log_level = logging.INFO
+
+    logging.basicConfig(format='%(levelname)s: %(message)s', level=log_level)
 
     # Parse the json videos file
     with open(options.input_file, 'r') as f:  
@@ -129,13 +139,13 @@ if __name__ == "__main__":
 
     for video in videos:
         # Download the video indicated by the URL
-        print "Downloading video from %s..." % video
+        logging.info("Downloading video from %s..." % video)
         fn = get_video_from_url(video)
 
         # Fill in the video metadata values
         metadata = parse_metadata(videos[video])
 
-        print "Uploading video from %s to YouTube..." % video
+        logging.info("Uploading video from %s to YouTube..." % video)
         # Upload the video
         uploaded_vid = upload_video(fn, metadata)
 
@@ -146,7 +156,7 @@ if __name__ == "__main__":
         # Remove the local file
         os.remove(fn)
 
-        print "Finished uploading; YouTube ID is %s" % video_id
+        logging.info("Finished uploading; YouTube ID is %s" % video_id)
 
     # Write a json file identical to the input, except with the YT id
     # added for each entry
