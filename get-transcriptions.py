@@ -71,7 +71,7 @@ if __name__ == "__main__":
 
     parser.add_option('-o', '--output-dir', action="store", dest="output_dir",
                       help="""Output directory""",
-                      default="")
+                      default="-")
 
     parser.add_option('-q', '--quiet', action='store_true', dest='quiet',
                       help="""Don't display informational logs""", 
@@ -109,13 +109,17 @@ if __name__ == "__main__":
             # distinguishing info.
             
             if inc > 0:
-                fn = "%s-%s.sbv" % (video_id, inc)
+                fn = "%s-%s" % (video_id, inc)
             else:
-                fn = "%s.sbv" % video_id
+                fn = "%s" % video_id
 
-            output_path = os.path.normpath(options.output_dir) + os.sep + fn
+            if options.output_dir == '-':
+                print "# caption-track [%s] (%s)" % (fn, videos[video]['title'])
+                print caption_track
+            else:
+                output_path = os.path.normpath(options.output_dir) + os.sep + fn + ".sbv"
+                    
+                logging.info("Saving caption track to %s" % (output_path))
 
-            logging.info("Saving caption track to %s" % (output_path))
-
-            with open(output_path, "wt") as caption_file:
-                caption_file.write(caption_track)
+                with open(output_path, "wt") as caption_file:
+                    caption_file.write(caption_track)
