@@ -14,6 +14,7 @@
 
 import os
 import re
+import sys
 import yaml
 import json
 import urllib
@@ -44,6 +45,9 @@ yt_service.ProgrammaticLogin()
 # no useful "ID" field is beyond me.)
 video_id_regex = re.compile('http://gdata.youtube.com/feeds/api/videos/(\w+)</ns0:id>')
 
+# Initialize options global
+options = None
+
 # Upload a video to YouTube and get back a YouTubeVideoEntry object
 def upload_video(filename, metadata):
     # Create a container object for video metadata
@@ -73,7 +77,15 @@ def upload_video(filename, metadata):
 # Download the video at a given URL
 # TODO: handle missing or unavailable videos
 def get_video_from_url(url):
-    (filename, headers) = urllib.urlretrieve(url)
+    if options.quiet: 
+        reporthook = None
+    else:
+        reporthook = download_progress
+
+    (filename, headers) = urllib.urlretrieve(url, reporthook=reporthook)
+
+    if not options.quiet: sys.stdout.write("\n")
+
     return filename
 
 
@@ -103,6 +115,13 @@ def parse_metadata(metadata):
         all_metadata[k] = metadata.get(k, '')
 
     return all_metadata
+
+
+# Print file download progress to stdout
+def download_progress(count, blockSize, totalSize):
+    percent = int(count*blockSize*100/totalSize)
+    sys.stdout.write("\rProgress: %d%%" % percent)
+    sys.stdout.flush()
 
 
 if __name__ == "__main__":
