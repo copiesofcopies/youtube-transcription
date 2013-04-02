@@ -67,17 +67,22 @@ if __name__ == "__main__":
     parser = optparse.OptionParser()
 
     parser.add_option('-i', '--input-file', action="store", dest="input_file",
-                      help="""Input json file""", default="")
+                      help="""Input manifest file (JSON)""", default="")
 
     parser.add_option('-o', '--output-dir', action="store", dest="output_dir",
-                      help="""Output directory""",
+                      help="""Directory to save transcriptions in (optional; omit 
+                              or enter '-' to print to standard output)""",
                       default="-")
 
     parser.add_option('-q', '--quiet', action='store_true', dest='quiet',
-                      help="""Don't display informational logs""", 
+                      help="""Suppress informational messages""", 
                       default=False)
     
     options, args = parser.parse_args()
+
+    if options.input_file == '':
+        parser.print_help()
+        exit(-1)
 
     # Set logging level
     if options.quiet:

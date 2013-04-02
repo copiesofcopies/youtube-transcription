@@ -18,8 +18,8 @@ import sys
 import yaml
 import json
 import urllib
-import optparse
 import logging
+import optparse
 import gdata.youtube
 import gdata.youtube.service
 
@@ -130,17 +130,22 @@ if __name__ == "__main__":
     parser = optparse.OptionParser()
 
     parser.add_option('-i', '--input-file', action="store", dest="input_file",
-                      help="""Input json file""", default="")
+                      help="""Input manifest file (JSON)""", default="")
 
     parser.add_option('-o', '--output-file', action="store", dest="output_file",
-                      help="""Output json file (with YouTube IDs)""",
+                      help="""Output manifest file (optional; omit to save to 
+                              input file)""",
                       default="")
 
     parser.add_option('-q', '--quiet', action='store_true', dest='quiet',
-                      help="""Don't display informational logs""", 
+                      help="""Suppress informational messages""", 
                       default=False)
 
     options, args = parser.parse_args()
+
+    if options.input_file == '':
+        parser.print_help()
+        exit(-1)
 
     # Set logging level
     if options.quiet:
